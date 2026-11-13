@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { Vector2, Vector3 } from 'three'
 import { ALCOVE_CELL, START_LEVEL, WATER_LEVELS, type Cell } from './constants'
+import type { Pose } from './Explorer'
 
 type GameState = {
   /** Index into WATER_LEVELS the water is moving towards. */
@@ -73,6 +74,10 @@ export const live = {
   platformPos: new Vector3(),
   /** Seconds since the chest opened, -1 while closed. Drives the whole finale. */
   chestT: -1,
+  /** Leaning on the platform block (whether or not it slides yet). */
+  pushing: false,
+  /** Animation the character should play. */
+  pose: 'Idle' as Pose,
 }
 
 /** True while the finale's camera move plays; the player can't move. */

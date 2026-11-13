@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import {
   CapsuleCollider,
@@ -17,6 +17,8 @@ import {
 } from './constants'
 import { input } from './input'
 import { cutsceneActive, live, useGame } from './store'
+import { Explorer } from './Explorer'
+import { FINALE } from './sun'
 
 const HALF_HEIGHT = 0.5
 const RADIUS = 0.4
@@ -28,6 +30,7 @@ export function Player() {
   const body = useRef<RapierRigidBody>(null)
   const visual = useRef<Group>(null)
   const jumpLock = useRef(0)
+  const facing = useRef(0)
   const { rapier, world } = useRapier()
   const resetId = useGame((s) => s.resetId)
 
@@ -85,8 +88,27 @@ export function Player() {
     live.moveDir.set(ax, az)
     live.grounded = onSolid && !inWater
 
-    if (visual.current && (ax !== 0 || az !== 0)) {
-      visual.current.rotation.y = Math.atan2(ax, az)
+    // Pick the animation, and turn smoothly toward where we're heading.
+    const t = live.chestT
+    const presenting = t >= FINALE.pearlRise[0] && t < FINALE.cameraOut[0]
+    const moving = ax !== 0 || az !== 0
+    live.pose = presenting
+      ? 'Hold'
+      : live.pushing
+        ? 'Push'
+        : inWater
+          ? 'Swim'
+          : !onSolid
+            ? 'Jump'
+            : moving
+              ? 'Walk'
+              : 'Idle'
+    if (visual.current) {
+      const target = presenting ? 0 : moving ? Math.atan2(ax, az) : facing.current
+      facing.current = target
+      const v = visual.current.rotation
+      const diff = Math.atan2(Math.sin(target - v.y), Math.cos(target - v.y))
+      v.y += diff * (1 - Math.exp(-14 * dt))
     }
     if (p.y < -12) respawn()
   })
@@ -106,15 +128,16 @@ export function Player() {
         frictionCombineRule={CoefficientCombineRule.Min}
       />
       <group ref={visual}>
-        <mesh castShadow>
-          <capsuleGeometry args={[RADIUS, HALF_HEIGHT * 2, 6, 12]} />
-          <meshStandardMaterial color="#3f8f5a" />
-        </mesh>
-        {/* nose so you can see which way you face */}
-        <mesh position={[0, 0.35, RADIUS]} castShadow>
-          <boxGeometry args={[0.22, 0.14, 0.2]} />
-          <meshStandardMaterial color="#e6d3a3" />
-        </mesh>
+        <Suspense
+          fallback={
+            <mesh castShadow>
+              <capsuleGeometry args={[RADIUS, HALF_HEIGHT * 2, 6, 12]} />
+              <meshStandardMaterial color="#8a3a22" />
+            </mesh>
+          }
+        >
+          <Explorer />
+        </Suspense>
       </group>
     </RigidBody>
   )

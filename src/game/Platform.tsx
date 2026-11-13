@@ -75,6 +75,7 @@ export function Platform() {
       }
     }
 
+    live.pushing = dir !== null
     if (dir) {
       pushTime.current += dt
       if (pushTime.current > PUSH_DELAY) {
