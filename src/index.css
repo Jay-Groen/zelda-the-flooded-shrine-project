@@ -1,0 +1,150 @@
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #161915;
+  font-family: system-ui, sans-serif;
+  color: #e9e6da;
+}
+
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud-top {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  text-shadow: 0 1px 3px #000;
+}
+.hud-top h1 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+}
+.hud-top p {
+  margin: 2px 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.hud-top .level {
+  font-weight: 600;
+  color: #9ff3ff;
+}
+kbd {
+  padding: 1px 5px;
+  border: 1px solid #ffffff55;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.hud-prompt {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #000a;
+  font-size: 15px;
+}
+
+.hud-end {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 16px;
+  text-align: center;
+  background: #0008;
+  pointer-events: auto;
+}
+.hud-end h2 {
+  margin: 0;
+  font-size: 40px;
+  letter-spacing: 0.06em;
+}
+.hud-end button {
+  justify-self: center;
+  padding: 10px 22px;
+  font: inherit;
+  border: 0;
+  border-radius: 999px;
+  background: #e9d48f;
+  color: #222;
+  cursor: pointer;
+}
+
+.hud-top {
+  transition: opacity 0.8s;
+}
+.hud-finale .hud-top {
+  opacity: 0.35;
+}
+
+.hud-banner {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  font-size: 30px;
+  letter-spacing: 0.08em;
+  color: #fff3d6;
+  text-shadow: 0 0 18px #ffb84d99, 0 2px 6px #000;
+  white-space: nowrap;
+  animation: banner-in 0.9s ease-out both;
+}
+.hud-banner small {
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.hud-banner-fade {
+  animation:
+    banner-in 0.9s ease-out both,
+    banner-out 1.2s ease-in 4s forwards;
+}
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+    filter: blur(4px);
+  }
+}
+@keyframes banner-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.hud-end {
+  background: radial-gradient(circle at 50% 40%, #fff1d0cc, #3a2a12ee 70%);
+  color: #2b1d0a;
+  text-shadow: none;
+  animation: end-in 1.6s ease-out both;
+}
+.hud-end p {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+@keyframes end-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .hud-banner {
+    font-size: 22px;
+  }
+}
