@@ -4,6 +4,8 @@ A one-room, Zelda-inspired puzzle in the browser: raise and lower the water to r
 
 Built with React Three Fiber, Rapier physics and custom GLSL shaders.
 
+**[Play it in your browser →](https://jay-groen.github.io/zelda-the-flooded-shrine-project/)**
+
 ## Play
 
 ```bash
