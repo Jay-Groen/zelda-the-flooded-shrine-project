@@ -78,6 +78,12 @@ export const live = {
   pushing: false,
   /** Animation the character should play. */
   pose: 'Idle' as Pose,
+  /** performance.now() until which the character holds a celebration pose. */
+  celebrateUntil: 0,
+  /** Point the camera is looking at (lights follow it). */
+  cameraFocus: new Vector3(),
+  /** Mirror Hall: the sunbeam currently reaches the crystal. */
+  crystalLit: false,
 }
 
 /** True while the finale's camera move plays; the player can't move. */

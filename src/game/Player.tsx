@@ -16,7 +16,7 @@ import {
   SWIM_SPEED,
 } from './constants'
 import { input } from './input'
-import { cutsceneActive, live, useGame } from './store'
+import { cutsceneActive, live } from './store'
 import { Explorer } from './Explorer'
 import { FINALE } from './sun'
 
@@ -26,24 +26,37 @@ const FOOT = HALF_HEIGHT + RADIUS
 /** Where the player's centre floats relative to the waterline. */
 const SWIM_DEPTH = 0.2
 
-export function Player() {
+type PlayerProps = {
+  /** Spawn point in world space. */
+  start?: [number, number, number]
+  /** Water surface height in this level (very low = no water). */
+  waterY?: () => number
+  /** Changes whenever this level resets; the player respawns. */
+  resetKey?: number
+}
+
+const levelOneWater = () => live.waterY
+
+export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey = 0 }: PlayerProps) {
   const body = useRef<RapierRigidBody>(null)
   const visual = useRef<Group>(null)
   const jumpLock = useRef(0)
   const facing = useRef(0)
   const { rapier, world } = useRapier()
-  const resetId = useGame((s) => s.resetId)
 
   const respawn = () => {
     const b = body.current
     if (!b) return
-    b.setTranslation({ x: PLAYER_START[0], y: PLAYER_START[1], z: PLAYER_START[2] }, true)
+    b.setTranslation({ x: start[0], y: start[1], z: start[2] }, true)
     b.setLinvel({ x: 0, y: 0, z: 0 }, true)
   }
 
   useEffect(() => {
-    if (resetId > 0) respawn()
-  }, [resetId])
+    const b = body.current
+    if (resetKey === 0 || !b) return
+    b.setTranslation({ x: start[0], y: start[1], z: start[2] }, true)
+    b.setLinvel({ x: 0, y: 0, z: 0 }, true)
+  }, [resetKey, start])
 
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.05)
@@ -56,12 +69,13 @@ export function Player() {
     const hit = world.castRay(ray, FOOT + 0.15, true, undefined, undefined, undefined, b)
     const onSolid = hit !== null && v.y < 3
 
-    const swimY = live.waterY - SWIM_DEPTH
+    const swimY = waterY() - SWIM_DEPTH
     const inWater = p.y < swimY + 0.05
     jumpLock.current = Math.max(0, jumpLock.current - dt)
     const swimming = inWater && jumpLock.current === 0
 
-    const locked = cutsceneActive()
+    const celebrating = performance.now() < live.celebrateUntil
+    const locked = cutsceneActive() || celebrating
     const { x: ax, z: az } = locked ? { x: 0, z: 0 } : input.axis()
     const speed = inWater ? SWIM_SPEED : MOVE_SPEED
 
@@ -90,7 +104,7 @@ export function Player() {
 
     // Pick the animation, and turn smoothly toward where we're heading.
     const t = live.chestT
-    const presenting = t >= FINALE.pearlRise[0] && t < FINALE.cameraOut[0]
+    const presenting = (t >= FINALE.pearlRise[0] && t < FINALE.cameraOut[0]) || celebrating
     const moving = ax !== 0 || az !== 0
     live.pose = presenting
       ? 'Hold'
@@ -117,7 +131,7 @@ export function Player() {
     <RigidBody
       ref={body}
       colliders={false}
-      position={PLAYER_START}
+      position={start}
       enabledRotations={[false, false, false]}
       canSleep={false}
       ccd

@@ -8,6 +8,7 @@ import { live, useGame } from './store'
 import { playChime } from './audio'
 import { haloTexture } from './runes'
 import { FINALE } from './sun'
+import { useLevels } from './levels'
 
 const REACH = 2.3
 const OPEN_ANGLE = -1.9
@@ -37,7 +38,7 @@ export function Chest() {
     const near = Math.hypot(dx, dz) < REACH && Math.abs(dy) < 2
     if (near !== s.nearChest) s.setNearChest(near)
 
-    if (input.consumeInteract()) tryOpen()
+    if (useLevels.getState().active === 0 && input.consumeInteract()) tryOpen()
 
     // lid: brief wobble, then swing open with a little overshoot
     openT.current = s.chestOpen ? Math.min(1, openT.current + dt / 1.1) : 0

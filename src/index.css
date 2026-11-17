@@ -45,7 +45,7 @@ kbd {
 
 .hud-prompt {
   position: absolute;
-  bottom: 48px;
+  bottom: 104px;
   left: 50%;
   transform: translateX(-50%);
   padding: 8px 16px;
@@ -147,4 +147,63 @@ kbd {
   .hud-banner {
     font-size: 22px;
   }
+}
+
+/* Level switcher, bottom centre */
+.level-nav {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f6f4ec;
+  color: #1f2a24;
+  box-shadow: 0 8px 28px #0006;
+  pointer-events: auto;
+  text-shadow: none;
+}
+.level-nav button {
+  width: 56px;
+  border: 0;
+  background: none;
+  color: #2f7f74;
+  font: inherit;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+.level-nav button:hover:not(:disabled) {
+  background: #e8e5d8;
+}
+.level-nav button:disabled {
+  color: #c4c1b4;
+  cursor: default;
+}
+.level-nav-label {
+  display: grid;
+  place-items: center;
+  min-width: 170px;
+  padding: 8px 18px;
+  border-left: 1px solid #ddd9cb;
+  border-right: 1px solid #ddd9cb;
+  font-size: 16px;
+}
+.level-nav-label small {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.level-nav-check {
+  font-style: normal;
+  color: #2f9f6f;
+}
+.hud-end-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
 }

@@ -29,6 +29,7 @@ const GROUND_WARM = new Color('#4c3c2a')
 const KEY_COOL = new Color('#cfe0ff')
 const KEY_WARM = new Color('#ffd49a')
 const DUST_COUNT = 180
+const KEY_OFFSET = new Vector3(-9, 22, 13)
 
 /**
  * Lighting for the whole shrine, plus the finale: when the chest opens the
@@ -38,6 +39,8 @@ export function Sunlight() {
   const hemi = useRef<HemisphereLight>(null)
   const key = useRef<DirectionalLight>(null)
   const spot = useRef<SpotLight>(null)
+  // The key light (and its shadow box) follows whichever diorama the camera frames.
+  const keyTarget = useMemo(() => new Object3D(), [])
   const spotTarget = useMemo(() => {
     const o = new Object3D()
     o.position.set(...SUN_TARGET)
@@ -106,6 +109,8 @@ export function Sunlight() {
       hemi.current.intensity = 0.7 + 0.3 * s
     }
     if (key.current) {
+      keyTarget.position.copy(live.cameraFocus)
+      key.current.position.copy(live.cameraFocus).add(KEY_OFFSET)
       key.current.color.lerpColors(KEY_COOL, KEY_WARM, s)
       key.current.intensity = 1.2 + 0.4 * s
     }
@@ -136,8 +141,10 @@ export function Sunlight() {
   return (
     <>
       <hemisphereLight ref={hemi} args={[SKY_COOL, GROUND_COOL, 0.7]} />
+      <primitive object={keyTarget} />
       <directionalLight
         ref={key}
+        target={keyTarget}
         position={[-9, 22, 13]}
         color={KEY_COOL}
         intensity={1.2}
