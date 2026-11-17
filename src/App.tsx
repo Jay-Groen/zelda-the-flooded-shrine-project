@@ -17,6 +17,8 @@ import { useGame } from './game/store'
 import { useLevels } from './game/levels'
 import { MirrorHall } from './game/mirror/MirrorHall'
 import { useMirrorHall } from './game/mirror/store'
+import { FrozenGarden } from './game/ice/FrozenGarden'
+import { useFrozenGarden } from './game/ice/store'
 
 const debug = new URLSearchParams(location.search).has('debug')
 
@@ -26,8 +28,10 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'KeyR' || e.repeat) return
-      if (useLevels.getState().active === 0) useGame.getState().reset()
-      else useMirrorHall.getState().reset()
+      const active = useLevels.getState().active
+      if (active === 0) useGame.getState().reset()
+      else if (active === 1) useMirrorHall.getState().reset()
+      else useFrozenGarden.getState().reset()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -48,6 +52,7 @@ export default function App() {
             <TidePearl />
             <Door />
             <MirrorHall />
+            <FrozenGarden />
           </Physics>
         </Suspense>
         <Water />

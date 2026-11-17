@@ -17,7 +17,7 @@ import {
 } from './constants'
 import { input } from './input'
 import { cutsceneActive, live } from './store'
-import { Explorer } from './Explorer'
+import { Explorer, type Pose } from './Explorer'
 import { FINALE } from './sun'
 
 const HALF_HEIGHT = 0.5
@@ -33,11 +33,26 @@ type PlayerProps = {
   waterY?: () => number
   /** Changes whenever this level resets; the player respawns. */
   resetKey?: number
+  canJump?: boolean
+  /**
+   * Lets a level take over horizontal movement (e.g. sliding on ice). Gets the
+   * camera-relative input and the player's world position; return a velocity,
+   * or null to walk normally.
+   */
+  override?: (input: { x: number; z: number }, pos: { x: number; y: number; z: number }, dt: number) => MoveOverride | null
 }
+
+export type MoveOverride = { x: number; z: number; pose?: Pose }
 
 const levelOneWater = () => live.waterY
 
-export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey = 0 }: PlayerProps) {
+export function Player({
+  start = PLAYER_START,
+  waterY = levelOneWater,
+  resetKey = 0,
+  canJump = true,
+  override,
+}: PlayerProps) {
   const body = useRef<RapierRigidBody>(null)
   const visual = useRef<Group>(null)
   const jumpLock = useRef(0)
@@ -86,7 +101,7 @@ export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey 
       vy = MathUtils.damp(vy, rise, 8, dt)
     }
 
-    if (input.consumeJump() && !locked) {
+    if (input.consumeJump() && !locked && canJump) {
       if (inWater && p.y > swimY - 0.4) {
         vy = SWIM_JUMP_VELOCITY
         jumpLock.current = 0.4
@@ -96,7 +111,14 @@ export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey 
       }
     }
 
-    b.setLinvel({ x: ax * speed, y: vy, z: az * speed }, true)
+    let vx = ax * speed
+    let vz = az * speed
+    const forced = override?.({ x: ax, z: az }, p, dt) ?? null
+    if (forced) {
+      vx = forced.x
+      vz = forced.z
+    }
+    b.setLinvel({ x: vx, y: vy, z: vz }, true)
 
     live.playerPos.set(p.x, p.y, p.z)
     live.moveDir.set(ax, az)
@@ -105,9 +127,11 @@ export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey 
     // Pick the animation, and turn smoothly toward where we're heading.
     const t = live.chestT
     const presenting = (t >= FINALE.pearlRise[0] && t < FINALE.cameraOut[0]) || celebrating
-    const moving = ax !== 0 || az !== 0
+    const moving = forced ? Math.hypot(vx, vz) > 0.3 : ax !== 0 || az !== 0
     live.pose = presenting
       ? 'Hold'
+      : forced?.pose
+        ? forced.pose
       : live.pushing
         ? 'Push'
         : inWater
@@ -118,7 +142,7 @@ export function Player({ start = PLAYER_START, waterY = levelOneWater, resetKey 
               ? 'Walk'
               : 'Idle'
     if (visual.current) {
-      const target = presenting ? 0 : moving ? Math.atan2(ax, az) : facing.current
+      const target = presenting ? 0 : moving ? Math.atan2(vx, vz) : facing.current
       facing.current = target
       const v = visual.current.rotation
       const diff = Math.atan2(Math.sin(target - v.y), Math.cos(target - v.y))

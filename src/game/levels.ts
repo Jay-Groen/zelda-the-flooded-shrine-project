@@ -16,6 +16,7 @@ export type LevelInfo = {
  * camera's screen-right axis (+x +z), so the camera slides sideways between them.
  */
 export const MIRROR_HALL_OFFSET = new Vector3(34, 0, 34)
+export const FROZEN_GARDEN_OFFSET = new Vector3(68, 0, 68)
 
 export const LEVELS: LevelInfo[] = [
   { number: '01', name: 'The Flooded Shrine', center: new Vector3(0.8, 0.5, -2.5), fitRadius: 15 },
@@ -23,6 +24,12 @@ export const LEVELS: LevelInfo[] = [
     number: '02',
     name: 'The Mirror Hall',
     center: MIRROR_HALL_OFFSET.clone().add(new Vector3(0, 0.5, -0.5)),
+    fitRadius: 10.5,
+  },
+  {
+    number: '03',
+    name: 'The Frozen Garden',
+    center: FROZEN_GARDEN_OFFSET.clone().add(new Vector3(0, 0.5, -0.5)),
     fitRadius: 10.5,
   },
 ]

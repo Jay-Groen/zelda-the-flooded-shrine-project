@@ -2,6 +2,7 @@ import { LEVEL_NAMES } from './constants'
 import { useGame } from './store'
 import { LEVELS, useLevels } from './levels'
 import { useMirrorHall } from './mirror/store'
+import { useFrozenGarden } from './ice/store'
 
 const formatTime = (ms: number) => {
   const s = Math.max(0, Math.round(ms / 1000))
@@ -12,7 +13,7 @@ export function Hud() {
   const active = useLevels((s) => s.active)
   return (
     <div className="hud">
-      {active === 0 ? <ShrineHud /> : <MirrorHallHud />}
+      {active === 0 ? <ShrineHud /> : active === 1 ? <MirrorHallHud /> : <FrozenGardenHud />}
       <LevelNav />
     </div>
   )
@@ -114,6 +115,40 @@ function MirrorHallHud() {
         <div className="hud-banner hud-banner-fade" key="hall">
           <small>The crystal awakens</small>
           The light finds its way
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FrozenGardenHud() {
+  const embers = useFrozenGarden((s) => s.embers.filter((t) => t > 0).length)
+  const total = useFrozenGarden((s) => s.embers.length)
+  const needEmbers = useFrozenGarden((s) => s.needEmbers)
+  const solved = useFrozenGarden((s) => s.solved)
+  return (
+    <div className={solved ? 'hud-finale' : ''}>
+      <div className="hud-top">
+        <h1>The Frozen Garden</h1>
+        <p>
+          On ice you slide until something stops you · standing on ice: <kbd>W</kbd> ↗ <kbd>D</kbd> ↘{' '}
+          <kbd>S</kbd> ↙ <kbd>A</kbd> ↖ · <kbd>R</kbd> reset
+        </p>
+        <p className="level">
+          Embers: {embers}/{total} · bring them to the brazier
+        </p>
+      </div>
+
+      {needEmbers && !solved && (
+        <div className="hud-prompt">
+          The brazier needs {total} embers ({embers}/{total})
+        </div>
+      )}
+
+      {solved && (
+        <div className="hud-banner hud-banner-fade" key="garden">
+          <small>Warmth returns</small>
+          The garden blooms
         </div>
       )}
     </div>
