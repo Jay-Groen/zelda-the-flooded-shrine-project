@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
-import { GRAVITY } from './game/constants'
+import { BACKGROUND, CAMERA_FOV, GRAVITY } from './game/constants'
 import { Room } from './game/Room'
 import { Water } from './game/Water'
 import { LevelRunes } from './game/LevelRunes'
@@ -28,8 +28,8 @@ export default function App() {
 
   return (
     <>
-      <Canvas shadows camera={{ fov: 45, position: [0, 15, 13] }}>
-        <color attach="background" args={['#121512']} />
+      <Canvas shadows camera={{ fov: CAMERA_FOV, position: [-30, 30, 30] }}>
+        <color attach="background" args={[BACKGROUND]} />
         <Sunlight />
         <Suspense fallback={null}>
           <Physics gravity={[0, GRAVITY, 0]} debug={debug}>

@@ -34,7 +34,9 @@ export const BLOCKS: Block[] = [
   { min: [-10, -3, -10], max: [10, 4, -5], color: TERRACE },
 
   // outer walls
-  { min: [-11, -4, -11], max: [-10, 10, 11], color: WALL }, // west
+  // west wall faces the camera: invisible collider + a low visible lip
+  { min: [-11, -4, -11], max: [-10, 10, 11], visible: false },
+  { min: [-11, -4, -11], max: [-10, 0.5, 11], color: WALL, collider: false },
   { min: [10, -4, -11], max: [11, 10, -2.5], color: WALL }, // east, north of the niche
   { min: [10, -4, 0], max: [11, 10, 11], color: WALL }, // east, south of the niche
   // niche behind the alcove so the player can get behind the block and push it west

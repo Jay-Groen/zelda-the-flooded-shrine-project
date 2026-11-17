@@ -135,11 +135,10 @@ export function Sunlight() {
 
   return (
     <>
-      <fog attach="fog" args={['#121512', 35, 80]} />
       <hemisphereLight ref={hemi} args={[SKY_COOL, GROUND_COOL, 0.7]} />
       <directionalLight
         ref={key}
-        position={[8, 20, 10]}
+        position={[-9, 22, 13]}
         color={KEY_COOL}
         intensity={1.2}
         castShadow

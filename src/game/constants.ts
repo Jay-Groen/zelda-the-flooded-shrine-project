@@ -54,6 +54,14 @@ export const DOOR_CENTER: [number, number, number] = [3.5, 5.75, -10.5]
 export const BEAM_LENGTH = 15
 export const BEAM_RADIUS: [top: number, bottom: number] = [1.5, 3.4]
 
+/**
+ * Diorama camera: direction from the room toward the camera (south-west, ~35° up),
+ * and a narrow lens so the view reads almost isometric.
+ */
+export const CAMERA_DIR: [number, number, number] = [-0.58, 0.57, 0.58]
+export const CAMERA_FOV = 28
+export const BACKGROUND = '#0e2a1e'
+
 export const PLAYER_START: [number, number, number] = [0, 1.5, 7.5]
 export const CHEST_POS: [number, number, number] = [-3.75, TERRACE_TOP, -7.5]
 
